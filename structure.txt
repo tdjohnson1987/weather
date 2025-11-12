@@ -1,3 +1,4 @@
+FOLDER STRUCTURE:
 appV/                ← main screens (Views)
   (tabs)/
     index.tsx        ← main Forecast screen
@@ -84,3 +85,19 @@ hooksVM/             ← view models (state + logic)
         │  🌤️  CloudIndicator icons  │
         │  🌡️  Temperatures          │
         └────────────────────────────┘
+
+At Runtime: 
+
+1️⃣ User opens app → HomeScreen mounts
+2️⃣ useWeatherViewModel() triggers vm.refresh() → fetches from API
+3️⃣ getForecast() → returns array of ForecastDay objects
+4️⃣ vm.days updates → React re-renders ForecastList
+5️⃣ Each ForecastDay renders:
+
+Day name (Mon, Tue, …)
+
+Cloud indicator (☀️, ⛅, ☁️)
+
+Temperature number
+
+Result: a scrollable 7-day visual forecast.

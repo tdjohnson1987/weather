@@ -1,18 +1,19 @@
+import { Ionicons } from "@expo/vector-icons"; // Uncomment if using icons
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-// import { Ionicons } from "@expo/vector-icons"; // Uncomment if using icons
 
 
 interface CloudIndicatorProps {
     percentCloudCover: number;
     showLabel?: boolean;
-    size?: number; // size of the cloud icon 
 }
 
-export default function CloudIndicator({ percentCloudCover, showLabel = false, size = 24 }: CloudIndicatorProps) {
-    const opacity = percentCloudCover / 100;
+export default function CloudIndicator({ percentCloudCover, showLabel = false}: CloudIndicatorProps) {
+  let iconName: keyof typeof Ionicons.glyphMap = "sunny";
 
-    const cloudColour = `rgba(128, 128, 128, ${opacity})`; // gray color with variable opacity
+  if (percentCloudCover > 80) iconName = "cloud";
+  else if (percentCloudCover > 40) iconName = "partly-sunny";
+  else iconName = "sunny";
 
 //     const cloudColor = safePercent < 50
 //   ? `rgba(135,206,235,${1 - safePercent / 100})`  // bluish when clear
@@ -21,34 +22,18 @@ export default function CloudIndicator({ percentCloudCover, showLabel = false, s
 // const icon = safePercent > 80 ? "cloud" : safePercent > 30 ? "partly-sunny" : "sunny";
 // <Ionicons name={icon} size={24} color={cloudColor} />;
 
-
     return (
         <View style={styles.container}>
-            <View 
-                style={[
-                    styles.circle, 
-                    { width: size, height: size, backgroundColor: cloudColour }]} />
+            <Ionicons name={iconName} size={24} color="#888" /> 
             {showLabel && 
-                (<Text style={styles.label}>{percentCloudCover}%</Text>
-
-                )}
+            <Text 
+            style={styles.label}>{Math.round(percentCloudCover)}%
+            </Text>}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  circle: {
-    borderRadius: 9999, // fully round
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.1)",
-  },
-  label: {
-    fontSize: 12,
-    color: "#555",
-  },
+  container: { alignItems: "center" },
+  label: { fontSize: 12, color: "#666" },
 });

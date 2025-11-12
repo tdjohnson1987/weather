@@ -1,33 +1,56 @@
+import { RawOpenMeteoResponse, RawSMHIResponse } from "./WeatherApi";
+
+/**
+ * Common model used by both APIs
+ */
 export interface ForecastDay {
-  date: string;        // ISO date (YYYY-MM-DD)
-  temp: number;        // main temperature (°C)
-  tempMin?: number;
-  tempMax?: number;
-  condition?: string;
-  cloudCover: number;
+  date: string;        // e.g. "2021-11-01T14:00:00Z"
+  temperature: number; // °C
+  cloudCover: number;  // % (0–100)
 }
 
-export function parseWeatherData(raw: any): ForecastDay[] {
-  if (!raw) return [];
+/**
+ * Parse SMHI / KTH forecast into a simpler array for the app
+ */
+export function mapSMHIToDays(raw: RawSMHIResponse): ForecastDay[] {
+  if (!raw?.timeSeries) return [];
 
-  const days = raw.daily ?? raw.forecast ?? raw;
-  if (!Array.isArray(days)) return [];
+  const days: ForecastDay[] = [];
 
-  return days.map((d: any) => {
-    const ts = d.dt ?? d.time ?? d.date;
-    const date = ts
-      ? new Date(Number(ts) * (String(ts).length === 10 ? 1000 : 1)).toISOString().slice(0, 10)
-      : (d.date ?? "");
+  for (const entry of raw.timeSeries) {
+    const time = entry.validTime;
 
-    const temp = typeof d.temp === "number" ? d.temp : (d.temp?.day ?? NaN);
+    // Find temperature ("t") and total cloud cover ("tcc_mean")
+    const tParam = entry.parameters.find((p) => p.name === "t");
+    const cParam = entry.parameters.find((p) => p.name === "tcc_mean");
 
-    return {
-      date,
-      temp,
-      tempMin: d.temp?.min ?? d.tempMin,
-      tempMax: d.temp?.max ?? d.tempMax,
-      condition: d.weather?.[0]?.description ?? d.summary ?? "",
-      cloudCover: d.cloudcover_mean ?? d.cloudCover,
-    } as ForecastDay;
-  });
+    if (!tParam || !cParam) continue;
+
+    const temperature = tParam.values?.[0] ?? 0;
+    const cloudOctas = cParam.values?.[0] ?? 0;
+    const cloudCover = Math.min(100, (cloudOctas / 8) * 100); // convert octas (0–8) → %
+
+    days.push({ date: time, temperature, cloudCover });
+  }
+
+  console.log("Parsed SMHI entries:", days.length);
+  return days;
+}
+
+
+/**
+ * Parse Open-Meteo daily forecast into the same model
+ */
+export function mapOpenMeteoToDays(raw: RawOpenMeteoResponse): ForecastDay[] {
+  const d = raw?.daily ?? {};
+  if (!d.time || !d.temperature_2m_max || !d.cloudcover_mean) return [];
+
+  const days = d.time.map((t, i) => ({
+    date: t,
+    temperature: d.temperature_2m_max[i],
+    cloudCover: d.cloudcover_mean[i],
+  }));
+
+  console.log("Parsed Open-Meteo entries:", days.length);
+  return days;
 }
