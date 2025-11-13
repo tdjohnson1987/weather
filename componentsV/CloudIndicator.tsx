@@ -15,7 +15,7 @@ export default function CloudIndicator({ percentCloudCover, showLabel = false}: 
   // välj ikon baserat på molntäcket
   let iconName: keyof typeof Ionicons.glyphMap = "sunny";
   if (safePercent > 80) iconName = "cloud";
-  else if (safePercent > 40) iconName = "partly-sunny";
+  else if (safePercent >= 40) iconName = "partly-sunny";
   else iconName = "sunny";
 
   // välj färg baserat på procent molnighet
