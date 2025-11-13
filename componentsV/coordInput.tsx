@@ -20,7 +20,7 @@ export default function CoordinateModal() {
       vm.setLon(parsedLon);
       closeModal(); // ✅ stänger modalen
     } else {
-      alert("Ange giltiga koordinater");
+      alert("Please write coordinates");
   }
   };
 
