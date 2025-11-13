@@ -6,8 +6,8 @@ const SMHI_URL =
   "https://maceo.sth.kth.se/weather/forecast?lonLat=lon/14.333/lat/60.383";
 const OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast";
 
-// Raw API response types
-export interface RawSMHIResponse {
+// Raw API response types from JSON, Test
+export interface RawSMHIResponse { 
   timeSeries: {
     validTime: string;
     parameters: {
@@ -20,6 +20,7 @@ export interface RawSMHIResponse {
   }[];
 }
 
+// Raw API response types from JSON, Open-Meteo
 export interface RawOpenMeteoResponse {
   daily: {
     time: string[];
@@ -28,6 +29,7 @@ export interface RawOpenMeteoResponse {
   };
 }
 
+// Fetch weather data from the selected provider
 export async function fetchWeather(
   provider: WeatherProvider,
   lat: number,

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 /**
  * useNetworkMonitor()
  * 
- * A lightweight hook that watches for connectivity changes.
+ * Watches for connectivity changes.
  * Returns a boolean: true = online, false = offline.
  * 
  * Usage:

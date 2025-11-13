@@ -38,7 +38,7 @@ export default function ForecastList({ days }: ForecastListProps) {
             <CloudIndicator percentCloudCover={item.cloudCover} showLabel />
             
             {/* Temperature */}
-            <Text style={styles.temp}>{Math.round(item.temp)}°C</Text>
+            <Text style={styles.temp}>{Math.round(item.temperature)}°C</Text>
           </View>
         );
       }}

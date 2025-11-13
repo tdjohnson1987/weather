@@ -5,23 +5,23 @@ import { WeatherProvider } from "../dataM/WeatherProvider";
 import { getForecast } from "../dataM/WeatherRepo";
 import useNetworkMonitor from "./useNetworkMonitor";
 
-export function useWeatherViewModel() {
-  const isOnline = useNetworkMonitor();
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
+export function useWeatherViewModel() { // ViewModel hook for weather forecast
+  const isOnline = useNetworkMonitor(); // Network status
+  const colorScheme = useColorScheme(); 
+  const isDarkMode = colorScheme === "dark"; 
 
   const [days, setDays] = useState<ForecastDay[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [lat, setLat] = useState(59.33);
-  const [lon, setLon] = useState(18.06);
+  const [lat, setLat] = useState(59.33); // Stockholm
+  const [lon, setLon] = useState(18.06); // Stockholm
 
   async function refresh() {
     setLoading(true);
     setError(null);
 
     try {
-      // ✅ Choose provider: SMHI (for native), OPEN_METEO (for web)
+      // ✅ Choose provider: SMHI (test server), OPEN_METEO (for web)
       const provider =
         typeof window !== "undefined"
           ? WeatherProvider.OPEN_METEO // browser: Open-Meteo 
