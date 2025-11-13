@@ -20,10 +20,11 @@ export default function CloudIndicator({ percentCloudCover, showLabel = false}: 
 
   // välj färg baserat på procent molnighet
   const cloudColor =
-    safePercent < 50
-      ? `rgba(135,206,235,${1 - safePercent / 100})` // ljusblå när det är klart
-      : `rgba(150,150,150,${safePercent / 100})`;    // gråare när det är molnigt
-
+    safePercent < 40
+      ? "#FFD700" // gul solfärg när det är klart
+      : safePercent < 50
+      ? `rgba(135,206,235,${1 - safePercent / 100})` // ljusblå övergång
+      : `rgba(150,150,150,${safePercent / 100})`;    // gråare när molnigt
   return (
         <View style={styles.container}>
             <Ionicons name={iconName} size={24} color={cloudColor} /> 
