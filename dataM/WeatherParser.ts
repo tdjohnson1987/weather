@@ -23,7 +23,7 @@ export function mapSMHIToDays(raw: RawSMHIResponse): ForecastDay[] {
 
     if (!tParam || !cParam) continue;
 
-    const temperature = tParam.values?.[0] ?? 0;
+    const temperature = tParam.values?.[0] ?? 0; 
     const cloudOctas = cParam.values?.[0] ?? 0;
     const cloudCover = Math.min(100, (cloudOctas / 8) * 100); // convert octas (0–8) → %
 

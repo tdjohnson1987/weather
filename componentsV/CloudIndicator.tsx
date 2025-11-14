@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons"; // Uncomment if using icons
+import { Ionicons } from "@expo/vector-icons"; // Ionicons icon set
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -7,6 +7,8 @@ interface CloudIndicatorProps {
     percentCloudCover: number;
     showLabel?: boolean;
 }
+
+
 
 export default function CloudIndicator({ percentCloudCover, showLabel = false}: CloudIndicatorProps) {
   let iconName: keyof typeof Ionicons.glyphMap = "sunny";
@@ -24,7 +26,7 @@ export default function CloudIndicator({ percentCloudCover, showLabel = false}: 
 
     return (
         <View style={styles.container}>
-            <Ionicons name={iconName} size={24} color="#888" /> 
+            <Ionicons name={iconName} size={24} color="#403434ff" /> 
             {showLabel && 
             <Text 
             style={styles.label}>{Math.round(percentCloudCover)}%

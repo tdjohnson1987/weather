@@ -11,8 +11,8 @@ export function useWeatherViewModel() { // ViewModel hook for weather forecast
   const isDarkMode = colorScheme === "dark"; 
 
   const [days, setDays] = useState<ForecastDay[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState<string | null>(null); 
   const [lat, setLat] = useState(59.33); // Stockholm
   const [lon, setLon] = useState(18.06); // Stockholm
 
@@ -28,7 +28,7 @@ export function useWeatherViewModel() { // ViewModel hook for weather forecast
           : WeatherProvider.SMHI;       // native: SMHI (test server)
 
       const data = await getForecast(provider, lat, lon);
-      console.log("✅ ViewModel received days:", data.length);
+      console.log("ViewModel received days:", data.length);
       setDays(data);
     } catch (err) {
       console.error("Refresh error:", err);
