@@ -22,6 +22,7 @@ export function useWeatherViewModel() { // ViewModel hook for weather forecast
 
     try {
       // ✅ Choose provider: SMHI (test server), OPEN_METEO (for web)
+      console.log("Fetching forecast for:", lat, lon);
       const provider =
         typeof window !== "undefined"
           ? WeatherProvider.OPEN_METEO // browser: Open-Meteo 
@@ -41,7 +42,7 @@ export function useWeatherViewModel() { // ViewModel hook for weather forecast
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [lat, lon]);
 
   return {
     days,
