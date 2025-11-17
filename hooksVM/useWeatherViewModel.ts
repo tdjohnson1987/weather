@@ -1,40 +1,49 @@
+// hooksVM/useWeatherViewModel.ts
 import { useEffect, useState } from "react";
-import { useColorScheme } from "react-native";
-import { ForecastDay } from "../dataM/WeatherParser";
+import { extractHourlyForDay } from "../dataM/WeatherParser";
+
+import {
+  ForecastBundle,
+  ForecastCurrent,
+  ForecastDaily,
+  ForecastHourly,
+} from "../dataM/WeatherModels";
+
 import { WeatherProvider } from "../dataM/WeatherProvider";
-import { getForecast } from "../dataM/WeatherRepo";
+import { getWeather } from "../dataM/WeatherRepo";
 import useNetworkMonitor from "./useNetworkMonitor";
 
-export function useWeatherViewModel() { // ViewModel hook for weather forecast
-  const isOnline = useNetworkMonitor(); // Network status
-  const colorScheme = useColorScheme(); 
-  const isDarkMode = colorScheme === "dark"; 
+export function useWeatherViewModel() {
+  const isOnline = useNetworkMonitor();
 
-  const [days, setDays] = useState<ForecastDay[]>([]);
-  const [loading, setLoading] = useState(false); 
-  const [error, setError] = useState<string | null>(null); 
-  const [lat, setLat] = useState(59.33); // Stockholm
-  const [lon, setLon] = useState(18.06); // Stockholm
+  const [weather, setWeather] = useState<ForecastBundle | null>(null);
+  const [provider, setProvider] = useState<WeatherProvider>(WeatherProvider.SMHI);
+  const [lat, setLat] = useState(59.33);
+  const [lon, setLon] = useState(18.06);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null);
+
+  const [daily, setDaily] = useState<ForecastDaily[]>([]);
+  const [hourly, setHourly] = useState<ForecastHourly[]>([]);
+  const [current, setCurrent] = useState<ForecastCurrent | null>(null);
 
   async function refresh() {
     setLoading(true);
     setError(null);
 
     try {
-      // ✅ Choose provider: SMHI (test server), OPEN_METEO (for web)
-      console.log("Fetching forecast for:", lat, lon);
-      const provider =
-        typeof window !== "undefined"
-          ? WeatherProvider.OPEN_METEO // browser: Open-Meteo 
-          : WeatherProvider.SMHI;       // native: SMHI (test server)
+      const bundle = await getWeather(provider, lat, lon);
 
-      const data = await getForecast(provider, lat, lon);
-      console.log("ViewModel received days:", data.length);
-      setDays(data);
-    } catch (err) {
-      console.error("Refresh error:", err);
-      if (!isOnline) setError("Offline — showing cached data.");
-      else setError("Failed to load forecast.");
+      setWeather(bundle);
+      setDaily(bundle.daily);
+      setHourly(bundle.hourly);
+      setCurrent(bundle.current);
+
+    } catch (e) {
+      console.error("Failed to load weather", e);
+      if (!isOnline) setError("Offline — showing cached or empty data.");
+      else setError("Failed to load weather.");
     } finally {
       setLoading(false);
     }
@@ -42,18 +51,38 @@ export function useWeatherViewModel() { // ViewModel hook for weather forecast
 
   useEffect(() => {
     refresh();
-  }, [lat, lon]);
+  }, [provider, lat, lon]);
+
+  // ---- Derived hourly slice for selected day ----
+  let selectedDayHourly: ForecastHourly[] = [];
+  if (weather && selectedDayIndex !== null) {
+    selectedDayHourly = extractHourlyForDay(weather, selectedDayIndex);
+  }
 
   return {
-    days,
+    // Weather data
+    weather,
+    current,
+    hourly,
+    daily,
+    selectedDayHourly,
+    selectedDayIndex,
+
+    // User settings
+    provider,
+    setProvider,
+    lat,
+    lon,
+    setLat,
+    setLon,
+
+    // UI state
     loading,
     error,
     isOnline,
-    lon,
-    lat,
-    setLon,
-    setLat,
+
+    // Actions
     refresh,
-    isDarkMode,
+    setSelectedDayIndex,
   };
 }

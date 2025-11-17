@@ -1,17 +1,20 @@
+// dataM/WeatherRepo.ts
 import { fetchWeather } from "./WeatherApi";
-import { ForecastDay, mapOpenMeteoToDays, mapSMHIToDays } from "./WeatherParser";
+import { ForecastBundle } from "./WeatherModels";
+import { parseOpenMeteo, parseSMHI, RawSMHIResponse } from "./WeatherParser";
 import { WeatherProvider } from "./WeatherProvider";
 
-// Get forecast data from the selected provider and map to common model
-export async function getForecast(
+export async function getWeather(
   provider: WeatherProvider,
   lat: number,
   lon: number
-): Promise<ForecastDay[]> {
+): Promise<ForecastBundle> {
+
   const raw = await fetchWeather(provider, lat, lon);
 
-  console.log("Got raw data keys:", Object.keys(raw));
-  return provider === WeatherProvider.SMHI
-    ? mapSMHIToDays(raw as any)
-    : mapOpenMeteoToDays(raw as any);
+  if (provider === WeatherProvider.SMHI) {
+    return parseSMHI(raw as RawSMHIResponse);
+  } else {
+    return parseOpenMeteo(raw);
+  }
 }
