@@ -43,6 +43,7 @@ const range = (start: any, end: any, step: any): number[] => {
 // ------------------------------------------------------------
 //
 export function parseOpenMeteo(raw: any): ForecastBundle {
+  console.log("Raw Open-Meteo response:", raw); // Add this line
   const utc = Number(raw.utcOffsetSeconds());
 
   // CURRENT

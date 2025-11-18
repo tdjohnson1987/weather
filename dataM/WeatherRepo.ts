@@ -1,3 +1,17 @@
+// import { ForecastBundle } from "./WeatherModels";
+// import { WeatherProvider, getAdapter } from "./WeatherProvider";
+
+// export async function getWeather(
+//   provider: WeatherProvider,
+//   lat: number,
+//   lon: number
+// ): Promise<ForecastBundle> {
+//   const adapter = getAdapter(provider);
+//   return adapter.getWeather(lat, lon);
+// }
+
+
+
 // dataM/WeatherRepo.ts
 import { fetchWeather } from "./WeatherApi";
 import { ForecastBundle } from "./WeatherModels";
@@ -12,9 +26,9 @@ export async function getWeather(
 
   const raw = await fetchWeather(provider, lat, lon);
 
-  if (provider === WeatherProvider.OPEN_METEO) {
-    return parseSMHI(raw as RawSMHIResponse);
-  } else {
+   if (provider === WeatherProvider.OPEN_METEO) {
     return parseOpenMeteo(raw);
+  } else {
+    return parseSMHI(raw as RawSMHIResponse);
   }
 }
