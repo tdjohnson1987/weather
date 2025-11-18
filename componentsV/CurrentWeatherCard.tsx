@@ -1,6 +1,7 @@
 // componentsV/CurrentWeatherCard.tsx
 import React from "react";
 import { StyleSheet, Text, View, useColorScheme } from "react-native";
+import { cloudIconFromWeatherCode } from "../constants/weatherIcons";
 import { ForecastCurrent } from "../dataM/WeatherModels";
 
 interface Props {
@@ -31,6 +32,13 @@ export default function CurrentWeatherCard({ current }: Props) {
       <Text style={[styles.time, { color: textSecondary }]}>
         Updated: {current.time.toLocaleString()}
       </Text>
+
+      {/* Cloud icon */}
+      <View style={styles.iconContainer}>
+          <Text style={styles.icon}>
+          {cloudIconFromWeatherCode(current.weatherCode)}
+          </Text>
+      </View>
     </View>
   );
 }
@@ -56,5 +64,14 @@ const styles = StyleSheet.create({
   time: {
     fontSize: 12,
     marginTop: 6,
+  },
+   iconContainer: {
+    width: 48,
+    alignItems: "flex-end",
+    justifyContent: "center",
+  },
+  icon: {
+    fontSize: 48,
+    alignContent: "space-evenly",
   },
 });

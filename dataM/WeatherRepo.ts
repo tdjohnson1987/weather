@@ -12,7 +12,7 @@ export async function getWeather(
 
   const raw = await fetchWeather(provider, lat, lon);
 
-  if (provider === WeatherProvider.SMHI) {
+  if (provider === WeatherProvider.OPEN_METEO) {
     return parseSMHI(raw as RawSMHIResponse);
   } else {
     return parseOpenMeteo(raw);

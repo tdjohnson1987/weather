@@ -1,10 +1,10 @@
 import React from "react";
 import {
-    FlatList,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import { cloudIconFromWeatherCode } from "../constants/weatherIcons";
@@ -51,6 +51,7 @@ export default function DailyList({ daily, onSelectDay }: DailyListProps) {
             <Text style={styles.temp}>
               {Math.round(item.tempMax ?? 0)}°
             </Text>
+
           </View>
         </TouchableOpacity>
       )}

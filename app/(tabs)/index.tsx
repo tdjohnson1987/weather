@@ -43,6 +43,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -109,30 +110,32 @@ export default function HomeScreen() {
           />
         )}
 
-        {/* Hourly breakdown */}
-        {vm.selectedDayHourly && vm.selectedDayHourly.length > 0 && (
-          <>
-            <Text style={[styles.sectionTitle, { color: textColor }]}>
-              Hourly Breakdown
-            </Text>
+      {/* Hourly breakdown */}
+      {vm.selectedDayHourly && vm.selectedDayHourly.length > 0 && (
+        <>
+          {/* Back button */}
+        <TouchableOpacity
+          style={{ marginBottom: 12 }}
+          onPress={() => vm.setSelectedDayIndex(null)}
+        >
+          <Text style={{ color: "#007AFF", fontSize: 16 }}>← Back to forecast</Text>
+        </TouchableOpacity>
+          <Text style={[styles.sectionTitle, { color: textColor }]}>
+            Hourly Breakdown
+          </Text>
 
-            {vm.selectedDayHourly.map((h, i) => (
-              <View key={i} style={[styles.hourRow, { borderColor }]}>
-                <Text style={{ color: textColor }}>
-                  {h.time.getHours()}:00
-                </Text>
+          {vm.selectedDayHourly.map((h, i) => (
+            <View key={i} style={[styles.hourRow, { borderColor }]}>
+              <Text style={{ color: textColor }}>{h.time.getHours()}:00</Text>
+              <Text style={{ color: textColor }}>
+                {Math.round(h.temperature)}°C
+              </Text>
+              <Text style={{ color: textColor }}>{h.precipitation} mm</Text>
+            </View>
+          ))}
+        </>
+      )}
 
-                <Text style={{ color: textColor }}>
-                  {Math.round(h.temperature)}°C
-                </Text>
-
-                <Text style={{ color: textColor }}>
-                  {h.precipitation} mm
-                </Text>
-              </View>
-            ))}
-          </>
-        )}
 
       </View>
 
