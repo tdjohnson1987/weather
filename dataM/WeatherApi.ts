@@ -1,56 +1,98 @@
-// dataM/WeatherApi.ts
+/// dataM/WeatherApi.ts
+
 import axios from "axios";
-import { fetchWeatherApi } from "openmeteo";
 import { WeatherProvider } from "./WeatherProvider";
 
+// Typer / interfaces för Open-Meteo-svar
+
+export interface OpenMeteoCurrent {
+  temperature_2m: number;
+  weather_code: number;
+  wind_speed_10m: number;
+  wind_direction_10m: number;
+}
+
+export interface OpenMeteoHourly {
+  time: string[];
+  temperature_2m: number[];
+  precipitation: number[];
+}
+
+export interface OpenMeteoDaily {
+  time: string[];
+  weather_code: number[];
+  temperature_2m_max: number[];
+  temperature_2m_min: number[];
+}
+
+export interface OpenMeteoResponse {
+  latitude: number;
+  longitude: number;
+  generationtime_ms: number;
+  utc_offset_seconds: number;
+  timezone: string;
+  timezone_abbreviation: string;
+  elevation: number;
+  current_weather: OpenMeteoCurrent;
+  hourly: OpenMeteoHourly;
+  daily: OpenMeteoDaily;
+}
+
+// (Optionellt) Typer för SMHI-svar kan du definiera beroende på vad ditt SMHI-API returnerar.
+// Här är ett generiskt `any`, men du kan byta ut det mot en konkret typ när du vet hur datan ser ut:
+export type SmhiForecast = any;
+
+// Bas-url för SMHI
 const SMHI_URL =
   "https://maceo.sth.kth.se/weather/forecast?lonLat=lon/14.333/lat/60.383";
 
+// Bas-url för Open-Meteo
+const OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast";
+
+/**
+ * Hämtar väderdata från vald provider (SMHI eller Open-Meteo)
+ * @param provider - vilken väderleverantör du vill använda
+ * @param lat - latitud
+ * @param lon - longitud
+ * @returns Väderdatan som ett JavaScript-objekt
+ */
 export async function fetchWeather(
   provider: WeatherProvider,
   lat: number,
   lon: number
-): Promise<any> {
-  console.log("🌍 fetchWeather() called");
-  console.log("Provider:", provider, "Lat:", lat, "Lon:", lon);
+): Promise<OpenMeteoResponse | SmhiForecast> {
+  console.log("🌍 fetchWeather() called", { provider, lat, lon });
 
   if (provider === WeatherProvider.SMHI) {
     console.log("📡 Calling SMHI...");
     try {
-      const res = await axios.get(SMHI_URL);
+      const response = await axios.get<SmhiForecast>(SMHI_URL);
       console.log("✅ SMHI response OK");
-      return res.data;
-    } catch (err) {
-      console.error("❌ SMHI request failed:", err);
-      throw err;
+      return response.data;
+    } catch (error) {
+      console.error("❌ SMHI request failed:", error);
+      throw error;
     }
-  }
+  } else {
+    console.log("📡 Calling Open-Meteo (axios)…");
 
-  console.log("📡 Calling Open-Meteo CLIENT…");
-  const params = {
-    latitude: [lat],
-    longitude: [lon],
-    current:
-      "temperature_2m,weather_code,wind_speed_10m,wind_direction_10m",
-    hourly: "temperature_2m,precipitation",
-    daily: "weather_code,temperature_2m_max,temperature_2m_min",
-    timezone: "auto",
-  };
+    try {
+      const response = await axios.get<OpenMeteoResponse>(OPEN_METEO_URL, {
+        params: {
+          latitude: lat,
+          longitude: lon,
+          current_weather: true,
+          hourly: "temperature_2m,precipitation",
+          daily: "weather_code,temperature_2m_max,temperature_2m_min",
+          timezone: "auto",
+        },
+      });
 
-  const url = "https://api.open-meteo.com/v1/forecast";
-
-  try {
-    const responses = await fetchWeatherApi(url, params);
-    const model = responses[0];
-
-    console.log("Open-Meteo raw client model:", model);
-    console.log("🔎 Has current()? ->", typeof model.current === "function");
-    console.log("🔎 Has hourly()? ->", typeof model.hourly === "function");
-    console.log("🔎 Has daily()? ->", typeof model.daily === "function");
-
-    return model;
-  } catch (err) {
-    console.error("❌ Open-Meteo client FAILED:", err);
-    throw err;
+      console.log("✅ Open-Meteo response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("❌ Open-Meteo request failed:", error);
+      throw error;
+    }
   }
 }
