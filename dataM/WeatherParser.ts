@@ -41,34 +41,32 @@ const range = (start: any, end: any, step: any): number[] => {
 // ------------------------------------------------------------
 //                    OPEN-METEO PARSER
 // ------------------------------------------------------------
-//
 export function parseOpenMeteo(raw: any): ForecastBundle {
-  console.log("Raw Open-Meteo response:", raw); // Add this line
-  const utc = Number(raw.utcOffsetSeconds());
+  console.log("Raw Open-Meteo response:", raw);
+
+  const utc = Number(raw.utc_offset_seconds ?? 0);
 
   // CURRENT
-  const c = raw.current();
+  const c = raw.current ?? raw.current_weather;
   const current: ForecastCurrent | null = c
     ? {
-        time: new Date((Number(c.time()) + utc) * 1000),
-        temperature: Number(c.variables(0).value()),
-        weatherCode: Number(c.variables(1).value()),
-        windSpeed: Number(c.variables(2).value()),
-        windDirection: Number(c.variables(3).value()),
+        time: new Date((new Date(c.time).getTime() / 1000 + utc) * 1000),
+        temperature: Number(c.temperature_2m ?? c.temperature),
+        weatherCode: Number(c.weather_code ?? c.weathercode),
+        windSpeed: Number(c.wind_speed_10m ?? c.windspeed),
+        windDirection: Number(c.wind_direction_10m ?? c.winddirection),
       }
     : null;
 
   // HOURLY
-  const h = raw.hourly();
   const hourly: ForecastHourly[] = [];
-
-  if (h) {
-    const times = range(h.time(), h.timeEnd(), h.interval()).map(
-      (t) => new Date((t + utc) * 1000)
+  if (raw.hourly) {
+    const times = raw.hourly.time.map((t: string) =>
+      new Date((new Date(t).getTime() / 1000 + utc) * 1000)
     );
 
-    const temps = toNums(h.variables(0).valuesArray());
-    const prec = toNums(h.variables(1).valuesArray());
+    const temps = raw.hourly.temperature_2m ?? [];
+    const prec = raw.hourly.precipitation ?? [];
 
     for (let i = 0; i < times.length; i++) {
       hourly.push({
@@ -80,17 +78,15 @@ export function parseOpenMeteo(raw: any): ForecastBundle {
   }
 
   // DAILY
-  const d = raw.daily();
   const daily: ForecastDaily[] = [];
-
-  if (d) {
-    const times = range(d.time(), d.timeEnd(), d.interval()).map(
-      (t) => new Date((t + utc) * 1000)
+  if (raw.daily) {
+    const times = raw.daily.time.map((t: string) =>
+      new Date((new Date(t).getTime() / 1000 + utc) * 1000)
     );
 
-    const codes = toNums(d.variables(0).valuesArray());
-    const maxes = toNums(d.variables(1).valuesArray());
-    const mins = toNums(d.variables(2).valuesArray());
+    const codes = raw.daily.weather_code ?? [];
+    const maxes = raw.daily.temperature_2m_max ?? [];
+    const mins = raw.daily.temperature_2m_min ?? [];
 
     for (let i = 0; i < times.length; i++) {
       daily.push({
@@ -102,11 +98,7 @@ export function parseOpenMeteo(raw: any): ForecastBundle {
     }
   }
 
-  return {
-    current,
-    hourly,
-    daily,
-  };
+  return { current, hourly, daily };
 }
 
 //

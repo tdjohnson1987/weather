@@ -17,7 +17,7 @@ export function useWeatherViewModel() {
   const isOnline = useNetworkMonitor();
 
   const [weather, setWeather] = useState<ForecastBundle | null>(null);
-  const [provider, setProvider] = useState<WeatherProvider>(WeatherProvider.SMHI);
+  const [provider, setProvider] = useState<WeatherProvider>(WeatherProvider.OPEN_METEO);
   const [lat, setLat] = useState(59.33);
   const [lon, setLon] = useState(18.06);
   const [loading, setLoading] = useState(false);
