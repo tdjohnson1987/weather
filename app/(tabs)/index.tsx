@@ -15,6 +15,7 @@ import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated";
 import CoordinateModal from "../../componentsV/coordInput";
 import CurrentWeatherCard from "../../componentsV/CurrentWeatherCard";
 import DailyList from "../../componentsV/DailyList";
+import { useFavoriteLocation } from "../../hooksVM/useFavoriteLocation";
 import { useWeatherViewModel } from "../../hooksVM/useWeatherViewModel";
 
 export default function HomeScreen() {
@@ -26,6 +27,7 @@ export default function HomeScreen() {
 
   // NEW — this controls the split animation
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const { favorite, saveFavorite } = useFavoriteLocation();
 
   // Load weather on mount
   useEffect(() => {
@@ -119,9 +121,33 @@ export default function HomeScreen() {
         )}
 
       </Animated.View>
+      
+      {favorite && (
+        <View style={{ marginTop: 20 }}>
+          <Text style={{ fontSize: 16, fontWeight: "600" }}>Favorite</Text>
+
+          <TouchableOpacity
+            onPress={() => {
+              vm.setLat(favorite.lat);
+              vm.setLon(favorite.lon);
+              vm.refresh();
+            }}
+            style={{
+              paddingVertical: 10,
+              borderBottomWidth: 1,
+              borderColor: "#ccc",
+            }}
+          >
+            <Text style={{ fontSize: 16 }}>{favorite.name ?? "Saved Location"}</Text>
+            <Text style={{ fontSize: 12, color: "#777" }}>
+              {favorite.lat}, {favorite.lon}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Floating coordinate modal */}
-      <CoordinateModal />
+      <CoordinateModal onSaveFavorite={saveFavorite} />
     </View>
   );
 }

@@ -2,9 +2,16 @@ import React, { useState } from "react";
 import { Button, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useWeatherViewModel } from "../hooksVM/useWeatherViewModel";
 
-export default function CoordinateModal() {
+interface CoordinateModalProps {
+  onSaveFavorite?: (fav: { lat: number; lon: number; name?: string }) => void;
+}
+
+
+// ⭐ Lägg till props här
+export default function CoordinateModal({ onSaveFavorite }: CoordinateModalProps) {
   const vm = useWeatherViewModel();
   const [visible, setVisible] = useState(false);
+
   const [latInput, setLatInput] = useState(String(vm.lat));
   const [lonInput, setLonInput] = useState(String(vm.lon));
 
@@ -18,10 +25,10 @@ export default function CoordinateModal() {
     if (!isNaN(parsedLat) && !isNaN(parsedLon)) {
       vm.setLat(parsedLat);
       vm.setLon(parsedLon);
-      closeModal(); // ✅ stänger modalen
+      closeModal();
     } else {
       alert("Please write coordinates");
-  }
+    }
   };
 
   return (
@@ -52,6 +59,22 @@ export default function CoordinateModal() {
               keyboardType="numeric"
               style={styles.input}
             />
+
+            {/* Save the favorite location */}
+            <TouchableOpacity
+              style={{ marginBottom: 12 }}
+              onPress={() => {
+                if (onSaveFavorite) {
+                  onSaveFavorite?.({
+                    lat: parseFloat(latInput),
+                    lon: parseFloat(lonInput),
+                    name: "My Favorite", // or lett user write name
+                  });
+                }
+              }}
+            >
+              <Text style={{ color: "#007AFF", fontSize: 16 }}>⭐ Save as favorite</Text>
+            </TouchableOpacity>
 
             <Button title="Hämta väder" onPress={onSubmit} />
             <Button title="Avbryt" onPress={closeModal} color="#888" />
