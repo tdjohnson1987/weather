@@ -7,6 +7,8 @@ import {
   View,
 } from "react-native";
 
+import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated";
+
 import { cloudIconFromWeatherCode } from "../constants/weatherIcons";
 import { ForecastDaily } from "../dataM/WeatherModels";
 
@@ -23,8 +25,14 @@ export default function DailyList({ daily, onSelectDay }: DailyListProps) {
       contentContainerStyle={{ paddingBottom: 12 }}
       renderItem={({ item, index }) => (
         <TouchableOpacity onPress={() => onSelectDay(index)}>
-          <View style={styles.row}>
-
+          
+          {/* 👇 Detta är din animerade rad */}
+          <Animated.View
+            style={styles.row}
+            layout={Layout.springify()}       // Flytta upp/ner vid state-change
+            entering={FadeIn.duration(150)}   // Fade in
+            exiting={FadeOut.duration(150)}   // Fade ut
+          >
             {/* Left side – Date */}
             <View style={{ flex: 1 }}>
               <Text style={styles.day}>
@@ -52,7 +60,8 @@ export default function DailyList({ daily, onSelectDay }: DailyListProps) {
               {Math.round(item.tempMax ?? 0)}°
             </Text>
 
-          </View>
+          </Animated.View>
+
         </TouchableOpacity>
       )}
     />
@@ -69,7 +78,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 10,
 
-    // Light shadow
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 1 },
@@ -98,3 +106,4 @@ const styles = StyleSheet.create({
     color: "#333",
   },
 });
+
