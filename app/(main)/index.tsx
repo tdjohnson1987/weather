@@ -25,7 +25,7 @@ export default function HomeScreen() {
   const textColor = isDark ? "#f9fafb" : "#111827";
   const borderColor = isDark ? "#374151" : "#d1d5db";
 
-  // NEW — this controls the split animation
+  // This controls the split animation
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const { favorite, saveFavorite } = useFavoriteLocation();
 

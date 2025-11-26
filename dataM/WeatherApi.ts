@@ -38,8 +38,8 @@ export interface OpenMeteoResponse {
   daily: OpenMeteoDaily;
 }
 
-// (Optionellt) Typer för SMHI-svar kan du definiera beroende på vad ditt SMHI-API returnerar.
-// Här är ett generiskt `any`, men du kan byta ut det mot en konkret typ när du vet hur datan ser ut:
+// Typer för SMHI-svar kan definieras beroende på vad SMHI-API returnerar.
+// Generiskt `any`, kan bytas ut det mot en konkret typ när behövs.
 export type SmhiForecast = any;
 
 // Bas-url för SMHI

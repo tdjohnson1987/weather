@@ -1,4 +1,4 @@
-// dataM/WeatherModels.ts
+// dataM/WeatherModels.ts for each different time intervals
 
 export interface ForecastCurrent {
   time: Date;

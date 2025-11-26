@@ -6,7 +6,7 @@ import {
   ForecastHourly,
 } from "./WeatherModels";
 
-// ---------- Raw SMHI JSON type ----------
+//  Raw SMHI JSON type 
 
 export interface RawSMHIResponse {
   timeSeries: {
@@ -18,7 +18,7 @@ export interface RawSMHIResponse {
   }[];
 }
 
-// ---------- Helpers ----------
+//  Helpers 
 
 // Convert Float32Array | Float64Array | BigInt64Array → number[]
 const toNums = (arr: any): number[] => {
@@ -38,9 +38,8 @@ const range = (start: any, end: any, step: any): number[] => {
 };
 
 //
-// ------------------------------------------------------------
-//                    OPEN-METEO PARSER
-// ------------------------------------------------------------
+// ----------- OPEN-METEO PARSER -----------
+// 
 export function parseOpenMeteo(raw: any): ForecastBundle {
   console.log("Raw Open-Meteo response:", raw);
 
@@ -102,9 +101,7 @@ export function parseOpenMeteo(raw: any): ForecastBundle {
 }
 
 //
-// ------------------------------------------------------------
-//                    SMHI PARSER
-// ------------------------------------------------------------
+// ------------- SMHI PARSER ------------- 
 //
 export function parseSMHI(raw: RawSMHIResponse): ForecastBundle {
   const ts = raw.timeSeries;
@@ -176,9 +173,9 @@ export function parseSMHI(raw: RawSMHIResponse): ForecastBundle {
 }
 
 //
-// ------------------------------------------------------------
+// 
 //          Extract hourly for one selected day
-// ------------------------------------------------------------
+// 
 //
 export function extractHourlyForDay(
   bundle: ForecastBundle,
